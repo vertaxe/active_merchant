@@ -93,17 +93,17 @@ module ActiveMerchant #:nodoc:
       def add_customer_data(post, options)
         if options[:customer]
           post[:customer] = {
-          #  merchantCustomerId:  options[:customer][:merchantCustomerId],
-          #  givenName:  options[:customer][:givenName],
-          #  surname:  options[:customer][:surname],
-          #  birthDate:  options[:customer][:birthDate],
-          #  phone:  options[:customer][:phone],
-          #  mobile:  options[:customer][:mobile],
-          #  email:  options[:customer][:email],
-          #  companyName:  options[:customer][:companyName],
-          #  identificationDocType:  options[:customer][:identificationDocType],
-          #  identificationDocId:  options[:customer][:identificationDocId],
-          #  ip:  options[:customer][:ip],
+            #merchantCustomerId:  options[:customer][:merchantCustomerId],
+            #givenName:  options[:customer][:givenName],
+            #surname:  options[:customer][:surname],
+            #birthDate:  options[:customer][:birthDate],
+            #phone:  options[:customer][:phone],
+            #mobile:  options[:customer][:mobile],
+            #email:  options[:customer][:email],
+            #companyName:  options[:customer][:companyName],
+            #identificationDocType:  options[:customer][:identificationDocType],
+            #identificationDocId:  options[:customer][:identificationDocId],
+            #ip:  options[:customer][:ip],
           }
         end
       end
@@ -137,7 +137,7 @@ module ActiveMerchant #:nodoc:
           post[:currency] = (currency(money) || @options[:currency]) if 'RV'!=(post[:paymentType])
           post[:descriptor] = options[:description] || options[:descriptor]  
           post[:merchantInvoiceId] = options[:merchantInvoiceId] || options[:order_id] 
-          post[:merchantTransactionId] = options[:merchantTransactionId]  
+          post[:merchantTransactionId] = options[:merchantTransactionId] || options[:order_id]
       end
 
       def add_payment_method(post, payment, options)
