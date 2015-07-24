@@ -147,7 +147,11 @@ module ActiveMerchant #:nodoc:
               cvv: payment.verification_value,
             }
           else
-            post[:paymentBrand] = payment.brand.upcase
+            if payment.brand.upcase == 'AMERICAN_EXPRESS'
+              post[:paymentBrand] = 'AMEX'
+            else
+              post[:paymentBrand] = payment.brand.upcase
+            end
             post[:card] = {
               holder: payment.name,
               number: payment.number,
