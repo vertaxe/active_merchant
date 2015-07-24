@@ -1,125 +1,6 @@
 module ActiveMerchant #:nodoc:
   module Billing #:nodoc:
     class OppGateway < Gateway
-# = Open Payment Platform
-    #
-    #  The Open Payment Platform includes a powerful omni-channel transaction processing API, 
-    #   enabling you to quickly and flexibly build new applications and services on the platform. 
-    #   
-    #   This plugin enables connectivity to the Open Payment Platform for activemerchant. 
-    #
-    # For any questions or comments please contact support@payon.com
-    #
-    # == Usage
-    #
-    #   gateway = ActiveMerchant::Billing::OppGateway.new(
-    #      userId: 'merchant user id', 
-    #      password: 'password',
-    #      entityId: 'entity id', 
-    #   )
-    #
-    #   # set up credit card object as in main ActiveMerchant example
-    #   creditcard = ActiveMerchant::Billing::CreditCard.new(
-   #     :type       => 'visa',
-    #     :number     => '4242424242424242',
-    #     :month      => 8,
-    #     :year       => 2009,
-    #     :first_name => 'Bob',
-    #     :last_name  => 'Bobsen'
-    #     :verification_value: '123')
-    #
-    #   # Request: complete example, including address, billing address, shipping address, shopping cart
-    #    complete_request_options = {
-    #      order_id: "your merchant/shop order id", # alternative is to set merchantInvoiceId 
-    #      merchantTransactionId: "your merchant/shop transaction id",
-    #      address: address,
-    #      description: 'Store Purchase - Books',
-    #      riskWorkflow: false,
-    #      testMode: 'EXTERNAL' # or 'INTERNAL', valid only for test system
-    #      createRegistration: false, # payment details will be stored on the server an latter can be referenced
-    #
-    #     billing_address: {
-    #        address1: '123 Test Street',
-    #        city:     'Test',
-    #        state:    'TE',
-    #        zip:      'AB12CD',
-    #        country:  'GB',
-    #      },
-    #      shipping_address: {
-    #        name:     'Muton DeMicelis',
-    #        address1: 'My Street On Upiter, Apt 3.14/2.78',
-    #        city:     'Munich',
-    #        state:    'Bov',
-    #        zip:      '81675',
-    #        country:  'DE',
-    #      },
-    #      customer: {
-    #        merchantCustomerId:  "your merchant/customer id",
-    #        givenName:  'Jane',
-    #        surname:  'Jones',
-    #        birthDate:  '1965-05-01',
-    #        phone:  '(?!?)555-5555',
-    #        mobile:  '(?!?)234-23423',
-    #        email:  'jane@jones.com',
-    #        companyName:  'JJ Ltd.',
-    #        identificationDocType:  'PASSPORT',
-    #        identificationDocId:  'FakeID2342431234123',
-    #        ip:  101.102.103.104,
-    #      },
-    #      cart: {
-    #        items: [
-    #            { name: ' Bestseller Book', merchantItemId: 'isbn-0123456789012345', 
-    #              quantity: 1, type: 'book', price: 1.95, currency: 'EUR', description: 'Some item description',
-    #              tax: 7.0, shipping: 3.25, discount: 5.0
-    #            },                    
-    #            { name: 'Book 2', merchantItemId: 'isbn-0123456789012345', 
-    #              quantity: 1, type: 'book', price: 2.45, currency: 'EUR', description: 'Other item description',
-    #              tax: 7.0, shipping: 3.25, discount: 10.0
-    #            }                    
-    #        ],
-    #      },
-    #    }
-    #    
-    #    # Request: minimal example
-    #    minimal_request_options = {
-    #      order_id: "your merchant/shop order id", # alternative is to set merchantInvoiceId 
-    #      merchantTransactionId: "your merchant/shop transaction id",
-    #      description: 'Store Purchase - Books',
-    #    }
-    #
-    #   options = 
-    #   # run request
-    #   response = gateway.purchase(754, creditcard, options) # charge 7,54 EUR
-    #
-    #   response.success?                   # Check whether the transaction was successful
-    #   response.error_code                 # Retrieve the error message - it's mapped to Gateway::STANDARD_ERROR_CODE 
-    #   response.message                    # Retrieve the message returned by opp
-    #   response.authorization              # Retrieve the unique transaction ID returned by opp
-    #   response.params['result']['code']   # Retrieve original return code returned by opp server
-    #
-    # == Errors
-    #   If transaction is not successful, response.error_code contains mapped to Gateway::STANDARD_ERROR_CODE error message. 
-    #   Complete list of opp error codes can be viewed on https://docs.oppwa.com/ 
-    #   Because this list is much bigger than Gateway::STANDARD_ERROR_CODE, only fraction is mapped to Gateway::STANDARD_ERROR_CODE. 
-    #   All other codes are mapped as Gateway::STANDARD_ERROR_CODE[:processing_error], so if this is the case, 
-    #   you may check the original result code from OPP that can be found in response.params['result']['code']
-    #       
-    # == Special features
-    #   For purchase method risk check can be forced when options[:riskWorkflow] = true 
-    #   This will split (on OPP server side) the transaction into two separate transactions: authorize and capture, 
-    #   but capture will be executed only if risk checks are successful.   
-    #
-    #   For testing you may use the test account details listed fixtures.yml under opp. It is important to note that there are two test modes available:
-    #     options[:testMode]='EXTERNAL' causes test transactions to be forwarded to the processor's test system for 'end-to-end' testing
-    #     options[:testMode]='INTERNAL' causes transactions to be sent to opp simulators, which is useful when switching to the live endpoint for connectivity testing.
-    #   If no testMode parameter is sent, testMode=INTERNAL is the default behaviour.
-    #
-    #   Shopping Cart, Billing Address, Shipping Address, Custom Parameters are supported as described under https://docs.oppwa.com/parameters
-    #   See complete example above for details. 
-    #
-    #   == Tokenization
-    #  When createRegistration is set to true, the payment details will be stored and a token will be returned in registrationId response field, 
-    #  which can subsequently be used to referenced the stored payment.
 
       self.test_url = 'https://test.oppwa.com/v1/payments'
       self.live_url = 'https://oppwa.com/v1/payments'
@@ -212,17 +93,17 @@ module ActiveMerchant #:nodoc:
       def add_customer_data(post, options)
         if options[:customer]
           post[:customer] = {
-            merchantCustomerId:  options[:customer][:merchantCustomerId],
-            givenName:  options[:customer][:givenName],
-            surname:  options[:customer][:surname],
-            birthDate:  options[:customer][:birthDate],
-            phone:  options[:customer][:phone],
-            mobile:  options[:customer][:mobile],
-            email:  options[:customer][:email],
-            companyName:  options[:customer][:companyName],
-            identificationDocType:  options[:customer][:identificationDocType],
-            identificationDocId:  options[:customer][:identificationDocId],
-            ip:  options[:customer][:ip],
+          #  merchantCustomerId:  options[:customer][:merchantCustomerId],
+          #  givenName:  options[:customer][:givenName],
+          #  surname:  options[:customer][:surname],
+          #  birthDate:  options[:customer][:birthDate],
+          #  phone:  options[:customer][:phone],
+          #  mobile:  options[:customer][:mobile],
+          #  email:  options[:customer][:email],
+          #  companyName:  options[:customer][:companyName],
+          #  identificationDocType:  options[:customer][:identificationDocType],
+          #  identificationDocId:  options[:customer][:identificationDocId],
+          #  ip:  options[:customer][:ip],
           }
         end
       end
