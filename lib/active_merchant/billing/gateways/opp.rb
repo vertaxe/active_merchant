@@ -76,6 +76,8 @@ module ActiveMerchant #:nodoc:
         add_cart_items(post, options)
         add_customer_data(post, options)
         add_options(post, options)
+puts post
+puts options
         commit(post, nil, options)
       end
 
